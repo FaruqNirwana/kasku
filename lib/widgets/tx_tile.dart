@@ -1,0 +1,4 @@
+import 'package:flutter/material.dart';
+import '../app_helpers.dart';
+
+class TxTile extends StatelessWidget{final Map<String,dynamic> e;const TxTile(this.e,{super.key});@override Widget build(BuildContext c){final inc=e['jenis']=='Pemasukan';return ListTile(contentPadding:EdgeInsets.zero,leading:CircleAvatar(backgroundColor:(inc?green:red).withOpacity(.1),child:Icon(inc?Icons.south_west:Icons.north_east,color:inc?green:red)),title:Text('${e['nama_kategori']}',style:const TextStyle(fontWeight:FontWeight.bold,fontSize:13)),subtitle:Text('${e['keterangan']??''}${e['nama_siswa']==null?'':' • ${e['nama_siswa']}'}\\n${e['tanggal']}',style:const TextStyle(fontSize:10)),isThreeLine:true,trailing:Text('${inc?'+':'-'}${money.format(e['jumlah'])}',style:TextStyle(color:inc?green:red,fontWeight:FontWeight.bold,fontSize:12)));}}
