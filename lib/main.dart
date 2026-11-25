@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'app_helpers.dart';
 import 'database/db_helper.dart';
@@ -13,6 +14,11 @@ import 'screens/laporan_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Inisialisasi format tanggal
+  await initializeDateFormatting('id_ID', null);
+
+  // Database hanya dijalankan pada Android/Desktop,
+  // karena aplikasi web menggunakan tampilan preview.
   if (!kIsWeb) {
     await DB.i.db;
   }
@@ -31,7 +37,9 @@ class KasKu extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: bg,
-        colorScheme: ColorScheme.fromSeed(seedColor: blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: blue,
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: bg,
           foregroundColor: navy,
@@ -68,7 +76,6 @@ class _ShellState extends State<Shell> {
     });
   }
 
-  // Fungsi untuk menampilkan ikon SVG
   Widget navIcon(String file, Color color) {
     return SvgPicture.asset(
       'assets/icons/$file.svg',
@@ -86,7 +93,9 @@ class _ShellState extends State<Shell> {
     final pages = [
       Dashboard(
         key: ValueKey('d$refresh'),
-        go: (value) => setState(() => tab = value),
+        go: (value) {
+          setState(() => tab = value);
+        },
       ),
       Transactions(
         key: ValueKey('t$refresh'),
@@ -111,13 +120,11 @@ class _ShellState extends State<Shell> {
 
       bottomNavigationBar: NavigationBar(
         selectedIndex: tab,
-
         onDestinationSelected: (value) {
           setState(() {
             tab = value;
           });
         },
-
         backgroundColor: Colors.white,
         indicatorColor: blue.withOpacity(0.12),
 
@@ -133,7 +140,6 @@ class _ShellState extends State<Shell> {
             ),
             label: 'Dashboard',
           ),
-
           NavigationDestination(
             icon: navIcon(
               'transaction',
@@ -145,7 +151,6 @@ class _ShellState extends State<Shell> {
             ),
             label: 'Transaksi',
           ),
-
           NavigationDestination(
             icon: navIcon(
               'users',
@@ -157,7 +162,6 @@ class _ShellState extends State<Shell> {
             ),
             label: 'Siswa',
           ),
-
           NavigationDestination(
             icon: navIcon(
               'chart',

@@ -1,12 +1,13 @@
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../app_helpers.dart';
 import '../database/db_helper.dart';
+import 'kategori_screen.dart';
 
-/// Halaman utama KasKu.
-/// File ini hanya mengatur tampilan Dashboard, bukan database atau form transaksi.
 class Dashboard extends StatelessWidget {
   final void Function(int) go;
 
@@ -22,7 +23,9 @@ class Dashboard extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('Gagal memuat dashboard: ${snapshot.error}'));
+          return Center(
+            child: Text('Gagal memuat dashboard: ${snapshot.error}'),
+          );
         }
 
         final totals = snapshot.data![0] as Map<String, double>;
@@ -32,7 +35,7 @@ class Dashboard extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.only(bottom: 20),
           children: [
-            _DashboardHeader(),
+            const _DashboardHeader(),
             _BalanceCard(balance: totals['balance'] ?? 0),
             _IncomeExpenseCards(
               income: totals['in'] ?? 0,
@@ -51,6 +54,8 @@ class Dashboard extends StatelessWidget {
 }
 
 class _DashboardHeader extends StatelessWidget {
+  const _DashboardHeader();
+
   @override
   Widget build(BuildContext context) {
     return const Padding(
@@ -71,7 +76,10 @@ class _DashboardHeader extends StatelessWidget {
           SizedBox(height: 5),
           Text(
             'Kas rapi, kegiatan lancar.',
-            style: TextStyle(color: Color(0xFF7D8BA5), fontSize: 13),
+            style: TextStyle(
+              color: Color(0xFF7D8BA5),
+              fontSize: 13,
+            ),
           ),
         ],
       ),
@@ -83,6 +91,15 @@ class _BalanceCard extends StatelessWidget {
   final double balance;
 
   const _BalanceCard({required this.balance});
+
+  void _openCategories(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Categories(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +127,24 @@ class _BalanceCard extends StatelessWidget {
                   letterSpacing: 0.4,
                 ),
               ),
-              Icon(
-                Icons.account_balance_wallet_outlined,
-                color: Colors.white,
-                size: 19,
-              )
+              IconButton(
+                tooltip: 'Kelola kategori',
+                onPressed: () => _openCategories(context),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 30,
+                  minHeight: 30,
+                ),
+                icon: SvgPicture.asset(
+                  'assets/icons/wallet.svg',
+                  width: 22,
+                  height: 22,
+                  colorFilter: const ColorFilter.mode(
+                    Color(0xFFB9CCEF),
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -132,18 +162,27 @@ class _BalanceCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 13),
-          Container(height: 1, color: Colors.white.withOpacity(0.14)),
+          Container(
+            height: 1,
+            color: Colors.white.withOpacity(0.14),
+          ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'Kas XI RPL 1',
-                style: TextStyle(color: Colors.white70, fontSize: 10),
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 10,
+                ),
               ),
               Text(
                 '$month ${now.year}',
-                style: const TextStyle(color: Colors.white70, fontSize: 10),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 10,
+                ),
               ),
             ],
           ),
@@ -157,7 +196,10 @@ class _IncomeExpenseCards extends StatelessWidget {
   final double income;
   final double expense;
 
-  const _IncomeExpenseCards({required this.income, required this.expense});
+  const _IncomeExpenseCards({
+    required this.income,
+    required this.expense,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +246,10 @@ class _SmallTotalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 11,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -221,7 +266,11 @@ class _SmallTotalCard extends StatelessWidget {
                   color: color.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: color, size: 16),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 16,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -259,7 +308,9 @@ class _SmallTotalCard extends StatelessWidget {
 class _CashFlowCard extends StatefulWidget {
   final List<Map<String, dynamic>> transactions;
 
-  const _CashFlowCard({required this.transactions});
+  const _CashFlowCard({
+    required this.transactions,
+  });
 
   @override
   State<_CashFlowCard> createState() => _CashFlowCardState();
@@ -271,6 +322,7 @@ class _CashFlowCardState extends State<_CashFlowCard> {
   @override
   Widget build(BuildContext context) {
     final data = _makeCashFlow(widget.transactions, _period);
+
     final subtitle = _period == 'Bulanan'
         ? '6 bulan terakhir'
         : _period == 'Mingguan'
@@ -293,34 +345,144 @@ class _CashFlowCardState extends State<_CashFlowCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Arus kas', style: TextStyle(color: navy, fontSize: 14, fontWeight: FontWeight.w800)),
+                    const Text(
+                      'Arus kas',
+                      style: TextStyle(
+                        color: navy,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     const SizedBox(height: 3),
-                    Text(subtitle, style: const TextStyle(color: Color(0xFF8491A8), fontSize: 10)),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Color(0xFF8491A8),
+                        fontSize: 10,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              PopupMenuButton<String>(
-                initialValue: _period,
-                onSelected: (value) => setState(() => _period = value),
-                color: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                itemBuilder: (context) => const [
-                  PopupMenuItem(value: 'Mingguan', child: Text('Mingguan')),
-                  PopupMenuItem(value: 'Bulanan', child: Text('Bulanan')),
-                  PopupMenuItem(value: 'Tahunan', child: Text('Tahunan')),
-                ],
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                  decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(9)),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(_period, style: const TextStyle(color: navy, fontSize: 10, fontWeight: FontWeight.w600)),
-                      const SizedBox(width: 7),
-                      const Icon(Icons.keyboard_arrow_down, size: 15, color: navy),
-                    ],
+
+              // DROPDOWN ARUS KAS
+              MenuAnchor(
+                style: MenuStyle(
+                  backgroundColor:
+                      const WidgetStatePropertyAll(Colors.white),
+                  elevation: const WidgetStatePropertyAll(5),
+                  shadowColor: WidgetStatePropertyAll(
+                    Colors.black.withOpacity(0.10),
+                  ),
+                  padding: const WidgetStatePropertyAll(
+                    EdgeInsets.symmetric(vertical: 4),
+                  ),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  minimumSize: const WidgetStatePropertyAll(
+                    Size(0, 0),
+                  ),
+                  maximumSize: const WidgetStatePropertyAll(
+                    Size(120, 150),
                   ),
                 ),
+                menuChildren: [
+                  for (final period in [
+                    'Mingguan',
+                    'Bulanan',
+                    'Tahunan',
+                  ])
+                    MenuItemButton(
+                      style: ButtonStyle(
+                        padding: const WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                        ),
+                        minimumSize: const WidgetStatePropertyAll(
+                          Size(0, 32),
+                        ),
+                        overlayColor: WidgetStatePropertyAll(
+                          blue.withOpacity(0.06),
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() => _period = period);
+                      },
+                      child: SizedBox(
+                        width: 95,
+                        child: Row(
+                          children: [
+                            if (_period == period)
+                              const Icon(
+                                Icons.check,
+                                size: 14,
+                                color: blue,
+                              )
+                            else
+                              const SizedBox(width: 14),
+                            const SizedBox(width: 7),
+                            Expanded(
+                              child: Text(
+                                period,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: navy,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+                builder: (context, controller, child) {
+                  return InkWell(
+                    onTap: () {
+                      if (controller.isOpen) {
+                        controller.close();
+                      } else {
+                        controller.open();
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(9),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bg,
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _period,
+                            style: const TextStyle(
+                              color: navy,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 14,
+                            color: navy,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -335,13 +497,33 @@ class _CashFlowCardState extends State<_CashFlowCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('4 jt', style: TextStyle(color: Color(0xFF8491A8), fontSize: 9)),
-                      Text('2 jt', style: TextStyle(color: Color(0xFF8491A8), fontSize: 9)),
-                      Text('0', style: TextStyle(color: Color(0xFF8491A8), fontSize: 9)),
+                      Text(
+                        '4 jt',
+                        style: TextStyle(
+                          color: Color(0xFF8491A8),
+                          fontSize: 9,
+                        ),
+                      ),
+                      Text(
+                        '2 jt',
+                        style: TextStyle(
+                          color: Color(0xFF8491A8),
+                          fontSize: 9,
+                        ),
+                      ),
+                      Text(
+                        '0',
+                        style: TextStyle(
+                          color: Color(0xFF8491A8),
+                          fontSize: 9,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                Expanded(child: _CashFlowBars(data: data)),
+                Expanded(
+                  child: _CashFlowBars(data: data),
+                ),
               ],
             ),
           ),
@@ -349,10 +531,18 @@ class _CashFlowCardState extends State<_CashFlowCard> {
           Row(
             children: [
               const SizedBox(width: 27),
-              ...data.map((item) => Expanded(
-                    child: Text(item.label, textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xFF7D8BA5), fontSize: 9)),
-                  )),
+              ...data.map(
+                (item) => Expanded(
+                  child: Text(
+                    item.label,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF7D8BA5),
+                      fontSize: 9,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -361,7 +551,10 @@ class _CashFlowCardState extends State<_CashFlowCard> {
             children: [
               _LegendDot(color: blue, label: 'Pemasukan'),
               SizedBox(width: 16),
-              _LegendDot(color: Color(0xFFAFC5FF), label: 'Pengeluaran'),
+              _LegendDot(
+                color: Color(0xFFAFC5FF),
+                label: 'Pengeluaran',
+              ),
             ],
           ),
         ],
@@ -379,12 +572,22 @@ class _CashFlowBars extends StatelessWidget {
   Widget build(BuildContext context) {
     final highest = data.fold<double>(
       0,
-      (value, item) => math.max(value, math.max(item.income, item.expense)).toDouble(),
+      (value, item) => math.max(
+        value,
+        math.max(item.income, item.expense),
+      ).toDouble(),
     );
-    final double maxValue = math.max(4000000.0, (highest / 1000000).ceil() * 1000000.0).toDouble();
+
+    final maxValue = math.max(
+      4000000.0,
+      (highest / 1000000).ceil() * 1000000.0,
+    ).toDouble();
 
     return CustomPaint(
-      painter: _CashFlowPainter(data: data, maxValue: maxValue),
+      painter: _CashFlowPainter(
+        data: data,
+        maxValue: maxValue,
+      ),
       child: const SizedBox.expand(),
     );
   }
@@ -394,58 +597,88 @@ class _CashFlowPainter extends CustomPainter {
   final List<_MonthCashFlow> data;
   final double maxValue;
 
-  _CashFlowPainter({required this.data, required this.maxValue});
+  _CashFlowPainter({
+    required this.data,
+    required this.maxValue,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
       ..color = const Color(0xFFE8EDF5)
       ..strokeWidth = 1;
+
     final incomePaint = Paint()..color = blue;
     final expensePaint = Paint()..color = const Color(0xFFAFC5FF);
 
     for (var line = 0; line < 3; line++) {
       final y = size.height * line / 2;
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(size.width, y),
+        gridPaint,
+      );
     }
 
     final groupWidth = size.width / data.length;
     final barWidth = math.min(9.0, groupWidth * 0.23).toDouble();
+
     for (var i = 0; i < data.length; i++) {
       final center = groupWidth * (i + 0.5);
-      final incomeHeight = (data[i].income / maxValue) * size.height;
-      final expenseHeight = (data[i].expense / maxValue) * size.height;
+
+      final incomeHeight =
+          (data[i].income / maxValue) * size.height;
+
+      final expenseHeight =
+          (data[i].expense / maxValue) * size.height;
+
       final incomeRect = Rect.fromLTWH(
         center - barWidth - 1,
         size.height - incomeHeight,
         barWidth,
         incomeHeight,
       );
+
       final expenseRect = Rect.fromLTWH(
         center + 1,
         size.height - expenseHeight,
         barWidth,
         expenseHeight,
       );
+
       canvas.drawRRect(
-          RRect.fromRectAndRadius(incomeRect, const Radius.circular(3)),
-          incomePaint);
+        RRect.fromRectAndRadius(
+          incomeRect,
+          const Radius.circular(3),
+        ),
+        incomePaint,
+      );
+
       canvas.drawRRect(
-          RRect.fromRectAndRadius(expenseRect, const Radius.circular(3)),
-          expensePaint);
+        RRect.fromRectAndRadius(
+          expenseRect,
+          const Radius.circular(3),
+        ),
+        expensePaint,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(covariant _CashFlowPainter oldDelegate) =>
-      oldDelegate.data != data || oldDelegate.maxValue != maxValue;
+  bool shouldRepaint(covariant _CashFlowPainter oldDelegate) {
+    return oldDelegate.data != data ||
+        oldDelegate.maxValue != maxValue;
+  }
 }
 
 class _LegendDot extends StatelessWidget {
   final Color color;
   final String label;
 
-  const _LegendDot({required this.color, required this.label});
+  const _LegendDot({
+    required this.color,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -455,11 +688,19 @@ class _LegendDot extends StatelessWidget {
         Container(
           width: 6,
           height: 6,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
         ),
         const SizedBox(width: 5),
-        Text(label,
-            style: const TextStyle(color: Color(0xFF8491A8), fontSize: 8)),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Color(0xFF8491A8),
+            fontSize: 8,
+          ),
+        ),
       ],
     );
   }
@@ -483,18 +724,28 @@ class _LatestTransactions extends StatelessWidget {
           child: Row(
             children: [
               const Expanded(
-                child: Text('Transaksi terbaru',
-                    style: TextStyle(
-                        color: navy,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800)),
+                child: Text(
+                  'Transaksi terbaru',
+                  style: TextStyle(
+                    color: navy,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: onSeeAll,
                 style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero, minimumSize: Size.zero),
-                child: const Text('Lihat semua',
-                    style: TextStyle(color: blue, fontSize: 10)),
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                ),
+                child: const Text(
+                  'Lihat semua',
+                  style: TextStyle(
+                    color: blue,
+                    fontSize: 10,
+                  ),
+                ),
               ),
             ],
           ),
@@ -505,12 +756,21 @@ class _LatestTransactions extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             width: double.infinity,
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(15)),
-            child: const Text('Belum ada transaksi',
-                style: TextStyle(color: Color(0xFF8491A8), fontSize: 12)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: const Text(
+              'Belum ada transaksi',
+              style: TextStyle(
+                color: Color(0xFF8491A8),
+                fontSize: 12,
+              ),
+            ),
           )
         else
-          ...transactions.map((item) => _LatestTransactionTile(item: item)),
+          ...transactions.map(
+            (item) => _LatestTransactionTile(item: item),
+          ),
       ],
     );
   }
@@ -525,17 +785,25 @@ class _LatestTransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isIncome = item['jenis'] == 'Pemasukan';
     final color = isIncome ? green : red;
+
     final date = DateTime.tryParse('${item['tanggal']}');
+
     final dateLabel = date == null
         ? '${item['tanggal']}'
         : '${date.day} ${_indonesianMonths[date.month - 1].substring(0, 3)}';
+
     final student = item['nama_siswa'];
 
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 7),
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 11,
+        vertical: 9,
+      ),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(14)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Row(
         children: [
           Container(
@@ -545,28 +813,36 @@ class _LatestTransactionTile extends StatelessWidget {
               color: color.withOpacity(0.09),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(isIncome ? Icons.south : Icons.north,
-                color: color, size: 18),
+            child: Icon(
+              isIncome ? Icons.south : Icons.north,
+              color: color,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${item['nama_kategori'] ?? 'Transaksi'}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        color: navy,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700)),
+                Text(
+                  '${item['nama_kategori'] ?? 'Transaksi'}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: navy,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 const SizedBox(height: 3),
                 Text(
                   '${student ?? item['keterangan'] ?? 'Tanpa keterangan'} · $dateLabel',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      color: Color(0xFF8491A8), fontSize: 9),
+                    color: Color(0xFF8491A8),
+                    fontSize: 9,
+                  ),
                 ),
               ],
             ),
@@ -575,7 +851,10 @@ class _LatestTransactionTile extends StatelessWidget {
           Text(
             '${isIncome ? '+' : '−'}${money.format(item['jumlah'])}',
             style: TextStyle(
-                color: color, fontSize: 10, fontWeight: FontWeight.w800),
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ],
       ),
@@ -588,11 +867,17 @@ class _MonthCashFlow {
   final double income;
   final double expense;
 
-  const _MonthCashFlow(this.label, this.income, this.expense);
+  const _MonthCashFlow(
+    this.label,
+    this.income,
+    this.expense,
+  );
 }
 
 List<_MonthCashFlow> _makeCashFlow(
-    List<Map<String, dynamic>> transactions, String period) {
+  List<Map<String, dynamic>> transactions,
+  String period,
+) {
   final now = DateTime.now();
   final result = <_MonthCashFlow>[];
 
@@ -602,9 +887,16 @@ List<_MonthCashFlow> _makeCashFlow(
     String label;
 
     if (period == 'Mingguan') {
-      final currentWeekStart = DateTime(now.year, now.month, now.day)
-          .subtract(Duration(days: now.weekday - 1));
-      start = currentWeekStart.subtract(Duration(days: 7 * offset));
+      final currentWeekStart = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(Duration(days: now.weekday - 1));
+
+      start = currentWeekStart.subtract(
+        Duration(days: 7 * offset),
+      );
+
       end = start.add(const Duration(days: 7));
       label = '${start.day}/${start.month}';
     } else if (period == 'Tahunan') {
@@ -619,18 +911,30 @@ List<_MonthCashFlow> _makeCashFlow(
 
     double income = 0;
     double expense = 0;
+
     for (final item in transactions) {
       final date = DateTime.tryParse('${item['tanggal']}');
-      if (date == null || date.isBefore(start) || !date.isBefore(end)) continue;
+
+      if (date == null ||
+          date.isBefore(start) ||
+          !date.isBefore(end)) {
+        continue;
+      }
+
       final amount = (item['jumlah'] as num).toDouble();
+
       if (item['jenis'] == 'Pemasukan') {
         income += amount;
       } else {
         expense += amount;
       }
     }
-    result.add(_MonthCashFlow(label, income, expense));
+
+    result.add(
+      _MonthCashFlow(label, income, expense),
+    );
   }
+
   return result;
 }
 
