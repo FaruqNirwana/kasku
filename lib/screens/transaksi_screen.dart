@@ -258,7 +258,7 @@ class _TransactionsState extends State<Transactions> {
 
               return Column(
                 children: [
-                  // RINGKASAN
+                  // RINGKASAN PEMASUKAN DAN PENGELUARAN
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                     padding: const EdgeInsets.symmetric(
@@ -288,6 +288,7 @@ class _TransactionsState extends State<Transactions> {
                             title: 'Pengeluaran',
                             amount: expense,
                             color: navy,
+                            leftPadding: 14,
                           ),
                         ),
                       ],
@@ -541,17 +542,22 @@ class _SummaryItem extends StatelessWidget {
   final String title;
   final double amount;
   final Color color;
+  final double leftPadding;
 
   const _SummaryItem({
     required this.title,
     required this.amount,
     required this.color,
+    this.leftPadding = 2,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
+      padding: EdgeInsets.only(
+        left: leftPadding,
+        right: 2,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
