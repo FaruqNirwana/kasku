@@ -28,7 +28,6 @@ class Dashboard extends StatelessWidget {
         final totals = snapshot.data![0] as Map<String, double>;
         final transactions =
             snapshot.data![1] as List<Map<String, dynamic>>;
-        final cashFlow = _makeCashFlow(transactions);
 
         return ListView(
           padding: const EdgeInsets.only(bottom: 20),
@@ -39,7 +38,7 @@ class Dashboard extends StatelessWidget {
               income: totals['in'] ?? 0,
               expense: totals['out'] ?? 0,
             ),
-            _CashFlowCard(data: cashFlow),
+            _CashFlowCard(transactions: transactions),
             _LatestTransactions(
               transactions: transactions.take(5).toList(),
               onSeeAll: () => go(1),
@@ -111,8 +110,11 @@ class _BalanceCard extends StatelessWidget {
                   letterSpacing: 0.4,
                 ),
               ),
-              Icon(Icons.account_balance_wallet_outlined,
-                  color: Colors.white.withOpacity(0.8), size: 20),
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                color: Colors.white,
+                size: 19,
+              )
             ],
           ),
           const SizedBox(height: 8),
@@ -254,13 +256,27 @@ class _SmallTotalCard extends StatelessWidget {
   }
 }
 
-class _CashFlowCard extends StatelessWidget {
-  final List<_MonthCashFlow> data;
+class _CashFlowCard extends StatefulWidget {
+  final List<Map<String, dynamic>> transactions;
 
-  const _CashFlowCard({required this.data});
+  const _CashFlowCard({required this.transactions});
+
+  @override
+  State<_CashFlowCard> createState() => _CashFlowCardState();
+}
+
+class _CashFlowCardState extends State<_CashFlowCard> {
+  String _period = 'Bulanan';
 
   @override
   Widget build(BuildContext context) {
+    final data = _makeCashFlow(widget.transactions, _period);
+    final subtitle = _period == 'Bulanan'
+        ? '6 bulan terakhir'
+        : _period == 'Mingguan'
+            ? '6 minggu terakhir'
+            : '6 tahun terakhir';
+
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       padding: const EdgeInsets.fromLTRB(14, 13, 14, 12),
@@ -273,38 +289,37 @@ class _CashFlowCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Arus kas',
-                        style: TextStyle(
-                            color: navy,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800)),
-                    SizedBox(height: 3),
-                    Text('6 bulan terakhir',
-                        style: TextStyle(
-                            color: Color(0xFF8491A8), fontSize: 10)),
+                    const Text('Arus kas', style: TextStyle(color: navy, fontSize: 14, fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 3),
+                    Text(subtitle, style: const TextStyle(color: Color(0xFF8491A8), fontSize: 10)),
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                decoration: BoxDecoration(
-                  color: bg,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: const Row(
-                  children: [
-                    Text('Bulanan',
-                        style: TextStyle(
-                            color: navy,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600)),
-                    SizedBox(width: 7),
-                    Icon(Icons.keyboard_arrow_down, size: 15, color: navy),
-                  ],
+              PopupMenuButton<String>(
+                initialValue: _period,
+                onSelected: (value) => setState(() => _period = value),
+                color: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: 'Mingguan', child: Text('Mingguan')),
+                  PopupMenuItem(value: 'Bulanan', child: Text('Bulanan')),
+                  PopupMenuItem(value: 'Tahunan', child: Text('Tahunan')),
+                ],
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(9)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(_period, style: const TextStyle(color: navy, fontSize: 10, fontWeight: FontWeight.w600)),
+                      const SizedBox(width: 7),
+                      const Icon(Icons.keyboard_arrow_down, size: 15, color: navy),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -314,15 +329,15 @@ class _CashFlowCard extends StatelessWidget {
             height: 112,
             child: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 27,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('4 jt', style: _AxisTextStyle()),
-                      Text('2 jt', style: _AxisTextStyle()),
-                      Text('0', style: _AxisTextStyle()),
+                    children: [
+                      Text('4 jt', style: TextStyle(color: Color(0xFF8491A8), fontSize: 9)),
+                      Text('2 jt', style: TextStyle(color: Color(0xFF8491A8), fontSize: 9)),
+                      Text('0', style: TextStyle(color: Color(0xFF8491A8), fontSize: 9)),
                     ],
                   ),
                 ),
@@ -335,12 +350,8 @@ class _CashFlowCard extends StatelessWidget {
             children: [
               const SizedBox(width: 27),
               ...data.map((item) => Expanded(
-                    child: Text(
-                      item.label,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: Color(0xFF7D8BA5), fontSize: 9),
-                    ),
+                    child: Text(item.label, textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xFF7D8BA5), fontSize: 9)),
                   )),
             ],
           ),
@@ -580,20 +591,37 @@ class _MonthCashFlow {
   const _MonthCashFlow(this.label, this.income, this.expense);
 }
 
-List<_MonthCashFlow> _makeCashFlow(List<Map<String, dynamic>> transactions) {
+List<_MonthCashFlow> _makeCashFlow(
+    List<Map<String, dynamic>> transactions, String period) {
   final now = DateTime.now();
   final result = <_MonthCashFlow>[];
 
   for (var offset = 5; offset >= 0; offset--) {
-    final monthDate = DateTime(now.year, now.month - offset, 1);
+    DateTime start;
+    DateTime end;
+    String label;
+
+    if (period == 'Mingguan') {
+      final currentWeekStart = DateTime(now.year, now.month, now.day)
+          .subtract(Duration(days: now.weekday - 1));
+      start = currentWeekStart.subtract(Duration(days: 7 * offset));
+      end = start.add(const Duration(days: 7));
+      label = '${start.day}/${start.month}';
+    } else if (period == 'Tahunan') {
+      start = DateTime(now.year - offset, 1, 1);
+      end = DateTime(now.year - offset + 1, 1, 1);
+      label = '${start.year}';
+    } else {
+      start = DateTime(now.year, now.month - offset, 1);
+      end = DateTime(start.year, start.month + 1, 1);
+      label = _indonesianMonths[start.month - 1].substring(0, 3);
+    }
+
     double income = 0;
     double expense = 0;
-
     for (final item in transactions) {
       final date = DateTime.tryParse('${item['tanggal']}');
-      if (date == null || date.year != monthDate.year || date.month != monthDate.month) {
-        continue;
-      }
+      if (date == null || date.isBefore(start) || !date.isBefore(end)) continue;
       final amount = (item['jumlah'] as num).toDouble();
       if (item['jenis'] == 'Pemasukan') {
         income += amount;
@@ -601,14 +629,8 @@ List<_MonthCashFlow> _makeCashFlow(List<Map<String, dynamic>> transactions) {
         expense += amount;
       }
     }
-
-    result.add(_MonthCashFlow(
-      _indonesianMonths[monthDate.month - 1].substring(0, 3),
-      income,
-      expense,
-    ));
+    result.add(_MonthCashFlow(label, income, expense));
   }
-
   return result;
 }
 
