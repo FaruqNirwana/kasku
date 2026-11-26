@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'app_helpers.dart';
@@ -14,11 +15,10 @@ import 'screens/laporan_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi format tanggal
+  // Inisialisasi format tanggal Indonesia
   await initializeDateFormatting('id_ID', null);
 
-  // Database hanya dijalankan pada Android/Desktop,
-  // karena aplikasi web menggunakan tampilan preview.
+  // Database hanya dijalankan pada Android/Desktop
   if (!kIsWeb) {
     await DB.i.db;
   }
@@ -34,17 +34,36 @@ class KasKu extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'KasKu',
+
+      // Bahasa aplikasi
+      locale: const Locale('id', 'ID'),
+
+      // Localization Material dan Cupertino
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
+      supportedLocales: const [
+        Locale('id', 'ID'),
+        Locale('en', 'US'),
+      ],
+
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: bg,
+
         colorScheme: ColorScheme.fromSeed(
           seedColor: blue,
         ),
+
         appBarTheme: const AppBarTheme(
           backgroundColor: bg,
           foregroundColor: navy,
           elevation: 0,
         ),
+
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
@@ -54,6 +73,7 @@ class KasKu extends StatelessWidget {
           ),
         ),
       ),
+
       home: const Shell(),
     );
   }
@@ -97,14 +117,17 @@ class _ShellState extends State<Shell> {
           setState(() => tab = value);
         },
       ),
+
       Transactions(
         key: ValueKey('t$refresh'),
         changed: reload,
       ),
+
       Students(
         key: ValueKey('s$refresh'),
         changed: reload,
       ),
+
       Reports(
         key: ValueKey('r$refresh'),
       ),
@@ -120,11 +143,13 @@ class _ShellState extends State<Shell> {
 
       bottomNavigationBar: NavigationBar(
         selectedIndex: tab,
+
         onDestinationSelected: (value) {
           setState(() {
             tab = value;
           });
         },
+
         backgroundColor: Colors.white,
         indicatorColor: blue.withOpacity(0.12),
 
@@ -140,6 +165,7 @@ class _ShellState extends State<Shell> {
             ),
             label: 'Dashboard',
           ),
+
           NavigationDestination(
             icon: navIcon(
               'transaction',
@@ -151,6 +177,7 @@ class _ShellState extends State<Shell> {
             ),
             label: 'Transaksi',
           ),
+
           NavigationDestination(
             icon: navIcon(
               'users',
@@ -162,6 +189,7 @@ class _ShellState extends State<Shell> {
             ),
             label: 'Siswa',
           ),
+
           NavigationDestination(
             icon: navIcon(
               'chart',

@@ -1,17 +1,25 @@
+
 name: kasku
 description: Aplikasi pengelolaan kas offline
 publish_to: "none"
 version: 1.0.0+1
+
 environment:
   sdk: ">=3.3.0 <4.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
   cupertino_icons: ^1.0.8
+  flutter_svg: ^2.5.0
+  intl: ^0.20.2
   sqflite: ^2.4.2
   path: ^1.9.1
-  intl: ^0.20.2
-  flutter_svg: ^2.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -28,3 +36,4 @@ flutter:
     - assets/icons/wallet.svg
     - assets/icons/edit.svg
     - assets/icons/delete.svg
+    - assets/icons/calendar.svg
