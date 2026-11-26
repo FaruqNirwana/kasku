@@ -26,3 +26,5 @@ flutter:
     - assets/icons/users.svg
     - assets/icons/chart.svg
     - assets/icons/wallet.svg
+    - assets/icons/edit.svg
+    - assets/icons/delete.svg
