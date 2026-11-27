@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +31,7 @@ class _TransactionsState extends State<Transactions> {
       MaterialPageRoute(builder: (_) => TxForm(row: row)),
     );
 
-    if (result == true) {
+    if (result == true && mounted) {
       setState(() {});
       widget.changed();
     }
@@ -90,6 +91,7 @@ class _TransactionsState extends State<Transactions> {
             ],
           ),
         ),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: TextField(
@@ -113,7 +115,9 @@ class _TransactionsState extends State<Transactions> {
             ),
           ),
         ),
+
         const SizedBox(height: 12),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Container(
@@ -156,7 +160,9 @@ class _TransactionsState extends State<Transactions> {
             ),
           ),
         ),
+
         const SizedBox(height: 13),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
@@ -179,7 +185,9 @@ class _TransactionsState extends State<Transactions> {
             ],
           ),
         ),
+
         const SizedBox(height: 12),
+
         Expanded(
           child: FutureBuilder<List<Map<String, dynamic>>>(
             future: DB.i.tx(),
@@ -278,6 +286,7 @@ class _TransactionsState extends State<Transactions> {
                       ],
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
                     child: Row(
@@ -293,6 +302,7 @@ class _TransactionsState extends State<Transactions> {
                       ],
                     ),
                   ),
+
                   Expanded(
                     child: rows.isEmpty
                         ? const Center(
@@ -334,6 +344,7 @@ class _TransactionsState extends State<Transactions> {
                                       ),
                                     ),
                                   ),
+
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 3,
@@ -351,6 +362,7 @@ class _TransactionsState extends State<Transactions> {
                                       }).toList(),
                                     ),
                                   ),
+
                                   const SizedBox(height: 10),
                                 ],
                               );
@@ -825,6 +837,8 @@ class _TxFormState extends State<TxForm> {
     }
   }
 
+  // HAPUS TRANSAKSI
+
   Future<void> _delete() async {
     if (widget.row == null) return;
 
@@ -835,12 +849,13 @@ class _TxFormState extends State<TxForm> {
         return Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 22),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(17),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -848,33 +863,39 @@ class _TxFormState extends State<TxForm> {
               children: [
                 SvgPicture.asset(
                   'assets/icons/delete.svg',
-                  width: 22,
-                  height: 22,
+                  width: 26,
+                  height: 26,
                 ),
-                const SizedBox(height: 17),
+
+                const SizedBox(height: 20),
+
                 const Text(
                   'Hapus transaksi?',
                   style: TextStyle(
                     color: navy,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 8),
+
+                const SizedBox(height: 10),
+
                 const Text(
                   'Transaksi ini akan dihapus dari catatan kas. Periksa kembali sebelum melanjutkan.',
                   style: TextStyle(
                     color: Color(0xFF8491A8),
-                    fontSize: 11,
+                    fontSize: 13,
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 24),
+
                 Row(
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: 38,
+                        height: 48,
                         child: TextButton(
                           onPressed: () {
                             Navigator.pop(dialogContext, false);
@@ -883,23 +904,25 @@ class _TxFormState extends State<TxForm> {
                             backgroundColor: const Color(0xFFF3F5F9),
                             foregroundColor: navy,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(9),
+                              borderRadius: BorderRadius.circular(11),
                             ),
                           ),
                           child: const Text(
                             'Batal',
                             style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+
+                    const SizedBox(width: 12),
+
                     Expanded(
                       child: SizedBox(
-                        height: 38,
+                        height: 48,
                         child: FilledButton(
                           onPressed: () {
                             Navigator.pop(dialogContext, true);
@@ -909,13 +932,13 @@ class _TxFormState extends State<TxForm> {
                             foregroundColor: Colors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(9),
+                              borderRadius: BorderRadius.circular(11),
                             ),
                           ),
                           child: const Text(
                             'Hapus',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -1033,6 +1056,7 @@ class _TxFormState extends State<TxForm> {
                       title: 'Jenis transaksi',
                       child: _typeSelector(),
                     ),
+
                     _section(
                       title: 'Jumlah',
                       child: TextField(
@@ -1062,6 +1086,7 @@ class _TxFormState extends State<TxForm> {
                         ),
                       ),
                     ),
+
                     _section(
                       title: 'Kategori',
                       child: DropdownButtonFormField<int>(
@@ -1093,6 +1118,7 @@ class _TxFormState extends State<TxForm> {
                         },
                       ),
                     ),
+
                     _section(
                       title: 'Tanggal',
                       child: InkWell(
@@ -1129,6 +1155,7 @@ class _TxFormState extends State<TxForm> {
                         ),
                       ),
                     ),
+
                     _section(
                       title: 'Keterangan',
                       child: TextField(
@@ -1144,6 +1171,7 @@ class _TxFormState extends State<TxForm> {
                         ),
                       ),
                     ),
+
                     _section(
                       title: 'Pembayaran siswa',
                       trailing: const Padding(
@@ -1195,10 +1223,15 @@ class _TxFormState extends State<TxForm> {
                         },
                       ),
                     ),
+
+                    // TOMBOL HAPUS YANG DIPERBESAR
+
                     if (isEditing) ...[
                       const SizedBox(height: 1),
+
                       SizedBox(
-                        height: 42,
+                        width: double.infinity,
+                        height: 48,
                         child: OutlinedButton(
                           onPressed: _delete,
                           style: OutlinedButton.styleFrom(
@@ -1206,7 +1239,7 @@ class _TxFormState extends State<TxForm> {
                             backgroundColor: const Color(0xFFFFEEEE),
                             side: BorderSide.none,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(9),
+                              borderRadius: BorderRadius.circular(11),
                             ),
                           ),
                           child: Row(
@@ -1214,14 +1247,14 @@ class _TxFormState extends State<TxForm> {
                             children: [
                               SvgPicture.asset(
                                 'assets/icons/delete.svg',
-                                width: 17,
-                                height: 17,
+                                width: 20,
+                                height: 20,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 9),
                               const Text(
                                 'Hapus transaksi',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -1233,6 +1266,7 @@ class _TxFormState extends State<TxForm> {
                   ],
                 ),
               ),
+
               SafeArea(
                 top: false,
                 child: Container(
