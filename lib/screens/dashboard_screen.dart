@@ -164,7 +164,7 @@ class _BalanceCard extends StatelessWidget {
           const SizedBox(height: 13),
           Container(
             height: 1,
-            color: Colors.white.withOpacity(0.14),
+            color: Colors.white.withValues(alpha: 0.14),
           ),
           const SizedBox(height: 12),
           Row(
@@ -263,7 +263,7 @@ class _SmallTotalCard extends StatelessWidget {
                 width: 25,
                 height: 25,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.10),
+                  color: color.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -372,7 +372,7 @@ class _CashFlowCardState extends State<_CashFlowCard> {
                       const WidgetStatePropertyAll(Colors.white),
                   elevation: const WidgetStatePropertyAll(5),
                   shadowColor: WidgetStatePropertyAll(
-                    Colors.black.withOpacity(0.10),
+                    Colors.black.withValues(alpha: 0.10),
                   ),
                   padding: const WidgetStatePropertyAll(
                     EdgeInsets.symmetric(vertical: 4),
@@ -407,7 +407,7 @@ class _CashFlowCardState extends State<_CashFlowCard> {
                           Size(0, 32),
                         ),
                         overlayColor: WidgetStatePropertyAll(
-                          blue.withOpacity(0.06),
+                          blue.withValues(alpha: 0.06),
                         ),
                       ),
                       onPressed: () {
@@ -810,7 +810,7 @@ class _LatestTransactionTile extends StatelessWidget {
             width: 31,
             height: 31,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.09),
+              color: color.withValues(alpha: 0.09),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(

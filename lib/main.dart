@@ -151,7 +151,7 @@ class _ShellState extends State<Shell> {
         },
 
         backgroundColor: Colors.white,
-        indicatorColor: blue.withOpacity(0.12),
+        indicatorColor: blue.withValues(alpha: 0.12),
 
         destinations: [
           NavigationDestination(

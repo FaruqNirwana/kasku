@@ -735,7 +735,7 @@ class _TxFormState extends State<TxForm> {
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.035),
+                      color: Colors.black.withValues(alpha: 0.035),
                       blurRadius: 4,
                       offset: const Offset(0, 1),
                     ),
@@ -1090,7 +1090,7 @@ class _TxFormState extends State<TxForm> {
                     _section(
                       title: 'Kategori',
                       child: DropdownButtonFormField<int>(
-                        value: cat,
+                        initialValue: cat,
                         isExpanded: true,
                         icon: const Icon(
                           Icons.keyboard_arrow_down_rounded,
@@ -1186,7 +1186,7 @@ class _TxFormState extends State<TxForm> {
                         ),
                       ),
                       child: DropdownButtonFormField<int>(
-                        value: student,
+                        initialValue: student,
                         isExpanded: true,
                         icon: const Icon(
                           Icons.keyboard_arrow_down_rounded,
@@ -1276,7 +1276,7 @@ class _TxFormState extends State<TxForm> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.035),
+                        color: Colors.black.withValues(alpha: 0.035),
                         blurRadius: 10,
                         offset: const Offset(0, -3),
                       ),

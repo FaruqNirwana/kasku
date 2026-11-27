@@ -14,8 +14,8 @@ class TxTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: pemasukan
-            ? Colors.green.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
+            ? Colors.green.withValues(alpha: 0.1)
+            : Colors.red.withValues(alpha: 0.1),
         child: Icon(
           pemasukan ? Icons.arrow_downward : Icons.arrow_upward,
           color: pemasukan ? Colors.green : Colors.red,
